@@ -1,0 +1,14 @@
+prod:
+  vpc-id: vpc-123434
+  region: us-east-1
+  security_groups:
+    - sec_grp1
+    - sec_grp2
+    - sec_grp3
+
+stage:
+  vpc-id: vpc-890909
+  region: us-west-1
+  security_groups:
+    - sec_grp1
+    - sec_grp2

@@ -1,6 +1,7 @@
 import os
 import sys
 import thread
+
 # boto
 import boto
 import sqlite3
@@ -41,7 +42,7 @@ def add_ip(region, group, port, ip, requester_name)
 	:param requester_name: Whose IP is being added.
 
 	"""
-
+	cidr_ip = ip.'/32'
 	#Zone is the key to get vpc-id from config. Zone will also give
 	#all the sec grps. From these sec grps get the one containing the word
 	#server_type and then perform the action on this grp
@@ -61,7 +62,7 @@ def add_ip(region, group, port, ip, requester_name)
 	# Both these should happen as one action; atomic
 	# Mutex is deprecated in Python 3
 	mutex.acquire()
-	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=ip)
+	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip)
 	# Write to DB
 
 	# Check if DB file is available.

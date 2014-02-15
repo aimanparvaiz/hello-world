@@ -78,34 +78,6 @@ def add_ip(region, group, port, ip, requester_name)
 	mutex.release()
 
 
-@task
-def close()
-	"""
-	Opens port for a particular IP. Saves the name of the requester.
-
-	:param zone: Environments; prod, stage, dev.
-	:param group: Security Group under consideration.
-	:param requester_name: Whose IP is being added.
-
-	"""
-
-	#Zone is the key to get vpc-id from config. Zone will also give
-	#all the sec grps. From these sec grps get the one containing the word
-	#server_type and then perform the action on this grp
-
-	# TODO: IP range,
-	conn = get_ec2(region)
-	sec_gprs = conn.get_all_security_groups()
-	sec_grp = sec_gprs[group]
-	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=ip)
-
-
-
-
-
-
-
-
 
 @task
 def remove_ip(zone, server_type, port, ip, requester_name):

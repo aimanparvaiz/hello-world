@@ -1,3 +1,5 @@
+import os
+import sys
 # boto
 import boto
 import sqlite3
@@ -10,6 +12,7 @@ from fabric.operations import prompt
 
 from yaml import load, safe_dump
 
+db_path = '/mnt/sec_grp.db'
 
 def get_config():
 	with open(config.yaml) as f:
@@ -17,6 +20,14 @@ def get_config():
 
 def get_ec2(region):
 	return boto.ec2.connect_to_region(region)
+
+def get_db_conn():
+	return sqlite3.connect(db_path)
+
+def db_initializer():
+	conn = get_db_conn()
+	c = conn.cursor()
+	c.execute('''CREATE TABLE sec_grp_info(region text, group text, port real, ip text, requester_name text)''')
 
 @task
 def add_ip(region, group, port, ip, requester_name)
@@ -41,10 +52,25 @@ def add_ip(region, group, port, ip, requester_name)
 	for count in sec_grps:
 		if str(count) == 'SecurityGroup:'.group:
 			sec_grp = count
+		else:
+			print('sec grp not found')
+			system.exit(0)
 
 	# Both these should happen as one action; atomic
 	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=ip)
 	# Write to DB
+
+	# Check if DB file is available.
+	try:
+		os.path.exists('/mnt/sec_grp.db'):
+	except IOError:
+		print('DB in not initialized, initializing it')
+		# Call DB initializer()
+
+	db_conn = get_db_conn()
+	c = db_conn.cursor()
+	c.execute("INSERT INTO sec_grp_info VALUES('region, group,port, ip, requester_name')")
+
 
 @task
 def close()

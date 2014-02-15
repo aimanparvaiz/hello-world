@@ -1,5 +1,6 @@
 # boto
 import boto
+import sqlite3
 from boto.ec2.connection import EC2Connection
 
 # fabric
@@ -41,7 +42,9 @@ def add_ip(region, group, port, ip, requester_name)
 		if str(count) == 'SecurityGroup:'.group:
 			sec_grp = count
 
+	# Both these should happen as one action; atomic
 	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=ip)
+	# Write to DB
 
 @task
 def close()

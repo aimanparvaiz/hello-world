@@ -1,5 +1,6 @@
 import os
 import sys
+import thread
 # boto
 import boto
 import sqlite3
@@ -29,6 +30,7 @@ def db_initializer():
 	c = conn.cursor()
 	c.execute('''CREATE TABLE sec_grp_info(region text, group text, port real, ip text, requester_name text)''')
 
+# TODO Make this threaded for multi simultaneous executions
 @task
 def add_ip(region, group, port, ip, requester_name)
 	"""
@@ -57,6 +59,8 @@ def add_ip(region, group, port, ip, requester_name)
 			system.exit(0)
 
 	# Both these should happen as one action; atomic
+	# Mutex is deprecated in Python 3
+	mutex.acquire()
 	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=ip)
 	# Write to DB
 
@@ -69,7 +73,9 @@ def add_ip(region, group, port, ip, requester_name)
 
 	db_conn = get_db_conn()
 	c = db_conn.cursor()
+
 	c.execute("INSERT INTO sec_grp_info VALUES('region, group,port, ip, requester_name')")
+	mutex.release()
 
 
 @task
@@ -91,7 +97,6 @@ def close()
 	conn = get_ec2(region)
 	sec_gprs = conn.get_all_security_groups()
 	sec_grp = sec_gprs[group]
-	# May be make this and DB entry atomic
 	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=ip)
 
 

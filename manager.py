@@ -60,23 +60,27 @@ def add_ip(region, group, port, ip, requester_name)
 			system.exit(0)
 
 	# Both these should happen as one action; atomic
-	# Mutex is deprecated in Python 3
-	mutex.acquire()
-	sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip)
 	# Write to DB
 
-	# Check if DB file is available.
-	try:
-		os.path.exists('/mnt/sec_grp.db'):
-	except IOError:
-		print('DB in not initialized, initializing it')
+	# Returns True
+	if sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip):
+		try:
+			os.path.exists('/mnt/sec_grp.db'):
+			except IOError:
+			print('DB in not initialized, initializing it')
 		# Call DB initializer()
 
-	db_conn = get_db_conn()
-	c = db_conn.cursor()
+		db_conn = get_db_conn()
+		c = db_conn.cursor()
+		try:
 
-	c.execute("INSERT INTO sec_grp_info VALUES('region, group,port, ip, requester_name')")
-	mutex.release()
+			c.execute("INSERT INTO sec_grp_info VALUES('region, group,port, ip, requester_name')")
+		except IOError:
+			print('Operation failed')
+			system.exit(0)
+	else:
+		print ('Security Grp call failed')
+
 
 
 

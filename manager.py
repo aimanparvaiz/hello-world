@@ -26,14 +26,15 @@ def get_ec2(region):
 def get_db_conn():
 	return sqlite3.connect(db_path)
 
+@task
 def db_initializer():
 	conn = get_db_conn()
 	c = conn.cursor()
-	c.execute('''CREATE TABLE sec_grp_info(region text, group text, port real, ip text, requester_name text)''')
+	c.execute('''CREATE TABLE sec_grp_info(region text, security_group text, port real, ip text, requester_name text)''')
 
 # TODO Make this threaded for multi simultaneous executions
 @task
-def add_ip(region, group, port, ip, requester_name)
+def add_ip(region, group, port, ip, requester_name):
 	"""
 	Opens port for a particular IP. Saves the name of the requester.
 
@@ -42,7 +43,7 @@ def add_ip(region, group, port, ip, requester_name)
 	:param requester_name: Whose IP is being added.
 
 	"""
-	cidr_ip = ip.'/32'
+	cidr_ip = ip+'/32'
 	#Zone is the key to get vpc-id from config. Zone will also give
 	#all the sec grps. From these sec grps get the one containing the word
 	#server_type and then perform the action on this grp
@@ -53,11 +54,13 @@ def add_ip(region, group, port, ip, requester_name)
 	sec_grps = conn.get_all_security_groups()
 
 	for count in sec_grps:
-		if str(count) == 'SecurityGroup:'.group:
+		#import ipdb; ipdb.set_trace()
+		if str(count) == 'SecurityGroup:'+group:
 			sec_grp = count
-		else:
-			print('sec grp not found')
-			system.exit(0)
+	# This should be checked from the yaml
+	if len(str(sec_grp)) == 0:
+		print('sec grp not found')
+		sys.exit(0)
 
 	# Both these should happen as one action; atomic
 	# Write to DB
@@ -65,19 +68,23 @@ def add_ip(region, group, port, ip, requester_name)
 	# Returns True
 	if sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip):
 		try:
-			os.path.exists('/mnt/sec_grp.db'):
-			except IOError:
+			os.path.exists('/mnt/sec_grp.db')
+		except IOError:
 			print('DB in not initialized, initializing it')
 		# Call DB initializer()
 
 		db_conn = get_db_conn()
 		c = db_conn.cursor()
 		try:
-
-			c.execute("INSERT INTO sec_grp_info VALUES('region, group,port, ip, requester_name')")
+			print region
+			print group
+			print port
+			print ip
+			print requester_name
+			c.execute("INSERT INTO sec_grp_info VALUES('region', 'security_group', 'port', 'ip', 'requester_name')")
 		except IOError:
 			print('Operation failed')
-			system.exit(0)
+			sys.exit(0)
 	else:
 		print ('Security Grp call failed')
 

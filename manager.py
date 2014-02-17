@@ -36,7 +36,7 @@ def db_initializer():
 	c.execute('''CREATE TABLE sec_grp_info(region text, security_group text, port real, ip text, requester_name text)''')
 
 @task
-def open_port(ip_protocol, port, cidr_ip):
+def open_port(sec_grp, ip_protocol, port, cidr_ip):
 	# If API call is successful then in returns True
 	if not sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip):
 		ex = AppError( "AWS API failed" )
@@ -76,10 +76,16 @@ def add_ip(region, group, port, ip, requester_name):
 	# Catch this exception and in the catch part undo the action.
 
 	try:
-		open_port(ip_protocol, port, cidr_ip)
+		open_port(sec_grp, ip_protocol, port, cidr_ip)
 	except AppError, ex
 		print ex
-		# Undo the action, close the fucking port
+
+
+	try:
+		db_write()
+	excpet AppError, ex
+		print ex
+		# Undo the actions
 
 	if sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip):
 		try:

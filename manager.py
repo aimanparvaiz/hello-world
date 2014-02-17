@@ -16,6 +16,9 @@ from yaml import load, safe_dump
 
 db_path = '/mnt/sec_grp.db'
 
+class AppError(Exception):
+	pass
+
 def get_config():
 	with open(config.yaml) as f:
 		return load(f)
@@ -31,6 +34,13 @@ def db_initializer():
 	conn = get_db_conn()
 	c = conn.cursor()
 	c.execute('''CREATE TABLE sec_grp_info(region text, security_group text, port real, ip text, requester_name text)''')
+
+@task
+def open_port(ip_protocol, port, cidr_ip):
+	# If API call is successful then in returns True
+	if not sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip):
+		ex = AppError( "AWS API failed" )
+		raise ex
 
 # TODO Make this threaded for multi simultaneous executions
 @task
@@ -62,10 +72,15 @@ def add_ip(region, group, port, ip, requester_name):
 		print('sec grp not found')
 		sys.exit(0)
 
-	# Both these should happen as one action; atomic
-	# Write to DB
+	# Write a function which opens the security group and let it throw a exception.
+	# Catch this exception and in the catch part undo the action.
 
-	# Returns True
+	try:
+		open_port(ip_protocol, port, cidr_ip)
+	except AppError, ex
+		print ex
+		# Undo the action, close the fucking port
+
 	if sec_grp.authorize(ip_protocol='tcp', from_port=port, to_port=port, cidr_ip=cidr_ip):
 		try:
 			os.path.exists('/mnt/sec_grp.db')
@@ -76,12 +91,7 @@ def add_ip(region, group, port, ip, requester_name):
 		db_conn = get_db_conn()
 		c = db_conn.cursor()
 		try:
-			print region
-			print group
-			print port
-			print ip
-			print requester_name
-			c.execute("INSERT INTO sec_grp_info VALUES('region', 'security_group', 'port', 'ip', 'requester_name')")
+			c.execute("INSERT INTO sec_grp_info VALUES(region, security_group, port, ip, requester_name)")
 		except IOError:
 			print('Operation failed')
 			sys.exit(0)

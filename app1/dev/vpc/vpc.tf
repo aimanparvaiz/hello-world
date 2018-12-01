@@ -1,5 +1,5 @@
 module "vpc" {
-  source = "git::ssh://git@github.com/aimanparvaiz/tf-modules.git//modules/vpc"
+  source = "git::ssh://git@github.com/aimanparvaiz/terraform-modules.git//modules/vpc"
   vpc_name = "app1-dev"
   vpc_cidr = "10.12.0.0/16"
   enable_dns_support = true

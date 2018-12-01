@@ -2,7 +2,7 @@ data "terraform_remote_state" "eks" {
   backend = "s3"
   config {
     bucket = "apz-tf-state"
-    key = "us-west-2/dev/eks/terraform.tfstate"
+    key = "dev/eks/terraform.tfstate"
 
     region = "us-west-2"
   }
@@ -17,7 +17,7 @@ data "terraform_remote_state" "vpc" {
   }
 }
 module "db" {
-  source = "git::ssh://git@github.com/aimanparvaiz/tf-modules.git//modules/db"
+  source = "git::ssh://git@github.com/aimanparvaiz/terraform-modules.git//modules/db"
   identifier = "app1-dev-db"
   name     = "demodb"
   vpc_sg_id = ["${data.terraform_remote_state.eks.worker_security_group_id}"]

@@ -2,7 +2,7 @@ data "terraform_remote_state" "vpc" {
   backend = "s3"
   config {
     bucket = "apz-tf-state"
-    key = "us-west-2/dev/vpc/terraform.tfstate"
+    key = "dev/vpc/terraform.tfstate"
 
     region = "us-west-2"
   }
@@ -18,7 +18,7 @@ locals {
 }
 
 module "eks" {
-  source = "git::ssh://git@github.com/aimanparvaiz/tf-modules.git//modules/eks"
+  source = "git::ssh://git@github.com/aimanparvaiz/terraform-modules.git//modules/eks"
   cluster_name = "app1-dev-eks"
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
   private_subnets = ["${data.terraform_remote_state.vpc.private_subnets}"]
@@ -34,11 +34,9 @@ module "eks" {
 output "cluster_certificate_authority_data" {
   value = "${module.eks.cluster_certificate_authority_data}"
 }
-
 output "cluster_endpoint" {
   value = "${module.eks.cluster_endpoint}"
 }
-
 output "cluster_id" {
   value = "${module.eks.cluster_id}"
 }

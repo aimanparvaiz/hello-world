@@ -11,7 +11,7 @@ data "terraform_remote_state" "vpc" {
   backend = "s3"
   config {
     bucket = "apz-tf-state"
-    key = "us-west-2/dev/vpc/terraform.tfstate"
+    key = "dev/vpc/terraform.tfstate"
 
     region = "us-west-2"
   }

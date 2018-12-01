@@ -1,4 +1,7 @@
 terragrunt = {
+  dependencies {
+    paths = ["../eks"]
+  }
 
   include {
     path = "${find_in_parent_folders()}"

@@ -1,0 +1,8 @@
+.terraform
+.terragrunt
+.vscode
+*.tfstate
+*.tfstate.backup
+*.out
+.terragrunt-cache
+.idea

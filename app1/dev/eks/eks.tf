@@ -10,9 +10,10 @@ data "terraform_remote_state" "vpc" {
 locals {
   worker_groups = [
     {
-      instance_type = "t2.small"
+      instance_type = "m4.large"
       asg_max = 4
       autoscaling_enabled = true
+      subnets = "${join(",", data.terraform_remote_state.vpc.private_subnets)}"
     }
   ]
 }
@@ -21,7 +22,7 @@ module "eks" {
   source = "git::ssh://git@github.com/aimanparvaiz/terraform-modules.git//modules/eks"
   cluster_name = "app1-dev-eks"
   vpc_id = "${data.terraform_remote_state.vpc.vpc_id}"
-  private_subnets = ["${data.terraform_remote_state.vpc.private_subnets}"]
+  subnets = "${concat(data.terraform_remote_state.vpc.private_subnets, data.terraform_remote_state.vpc.public_subnets)}"
   worker_group_count = 1
   worker_groups = "${local.worker_groups}"
   tags = {

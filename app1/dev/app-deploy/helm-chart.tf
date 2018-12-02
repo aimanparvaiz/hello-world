@@ -1,3 +1,19 @@
+provider "helm" {
+  debug = true
+  kubernetes {
+    config_path = "../eks/kubeconfig_app1-dev-eks"
+  }
+}
+resource "helm_release" "metrics-server" {
+  name      = "metrics-server"
+  chart     = "stable/metrics-server"
+  version   = "2.0.2"
+  namespace = "metrics"
+}
+
+provider "kubernetes" {
+  config_path = "../eks/kubeconfig_app1-dev-eks"
+}
 resource "kubernetes_deployment" "helloworld" {
   metadata {
     name = "helloworld"
@@ -45,7 +61,7 @@ resource "kubernetes_deployment" "helloworld" {
 
 resource "kubernetes_service" "helloworld" {
   metadata {
-    name = "terraform-example"
+    name = "helloworld"
   }
   spec {
     selector {

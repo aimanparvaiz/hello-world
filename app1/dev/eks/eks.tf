@@ -17,7 +17,17 @@ locals {
     }
   ]
 }
+resource "null_resource" "kubeconfig" {
 
+  depends_on = ["module.eks"]
+
+  provisioner "local-exec" {
+    command = "export KUBECONFIG=kubeconfig_app1-dev-eks"
+  }
+  provisioner "local-exec" {
+  command = "kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default"
+  }
+}
 module "eks" {
   source = "git::ssh://git@github.com/aimanparvaiz/terraform-modules.git//modules/eks"
   cluster_name = "app1-dev-eks"
@@ -29,8 +39,8 @@ module "eks" {
     Terraform = "true"
     Environment = "dev"
   }
-
 }
+
 
 output "cluster_certificate_authority_data" {
   value = "${module.eks.cluster_certificate_authority_data}"

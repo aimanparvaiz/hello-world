@@ -22,44 +22,33 @@ resource "helm_release" "metrics-server" {
 provider "kubernetes" {
   config_path = "../eks/kubeconfig_${data.terraform_remote_state.eks.cluster_id}"
 }
-resource "kubernetes_deployment" "helloworld" {
+
+resource "kubernetes_replication_controller" "helloworld" {
   metadata {
     name = "helloworld"
     labels {
-      app = "helloworldApp"
+      app = "helloworld"
     }
   }
 
   spec {
-    replicas = 2
-
     selector {
-      match_labels {
-        app = "helloworldApp"
-      }
+      app = "helloworld"
     }
-
+    replicas = 3
     template {
-      metadata {
-        labels {
-          app = "helloworldApp"
-        }
-      }
+      container {
+        image = "aimanparvaiz/helloworld:hw-v1"
+        name  = "helloworld"
 
-      spec {
-        container {
-          image = "aimanparvaiz/helloworld:hw-v6"
-          name  = "helloworld"
-
-          resources{
-            limits{
-              cpu    = "0.5"
-              memory = "512Mi"
-            }
-            requests{
-              cpu    = "250m"
-              memory = "50Mi"
-            }
+        resources{
+          limits{
+            cpu    = "0.5"
+            memory = "512Mi"
+          }
+          requests{
+            cpu    = "250m"
+            memory = "50Mi"
           }
         }
       }
@@ -73,7 +62,7 @@ resource "kubernetes_service" "helloworld" {
   }
   spec {
     selector {
-      app = "${kubernetes_deployment.helloworld.metadata.0.labels.app}"
+      app = "${kubernetes_replication_controller.helloworld.metadata.0.labels.app}"
     }
     port {
       port = 80
@@ -90,9 +79,9 @@ resource "kubernetes_horizontal_pod_autoscaler" "helloworld" {
   spec {
     max_replicas = 10
     min_replicas = 3
-    target_cpu_utilization_percentage=1
+    target_cpu_utilization_percentage=10
     scale_target_ref {
-      kind = "Deployment"
+      kind = "ReplicationController"
       name = "helloworld"
     }
   }

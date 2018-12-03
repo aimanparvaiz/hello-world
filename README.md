@@ -34,11 +34,11 @@ I personally like to provision in the following order:
 
 go to vpc folder under app1 and run the following:
 
-```terragrunt get --terragrunt-source-update```
+1a. ```terragrunt get --terragrunt-source-update```
 
-```terragrunt plan```
+1b. ```terragrunt plan```
 
-```terragrunt apply```
+1c. ```terragrunt apply```
 
 Repeat steps 1 a, 1 b, 1c for EKS, app-deploy and DB in this order.
 

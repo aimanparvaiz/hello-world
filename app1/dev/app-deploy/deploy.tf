@@ -48,7 +48,7 @@ resource "kubernetes_deployment" "helloworld" {
 
       spec {
         container {
-          image = "nginx:1.7.8"
+          image = "aimanparvaiz/helloworld:hw-v6"
           name  = "helloworld"
 
           resources{

@@ -26,7 +26,7 @@ There are two ways to setup the whole stack - VPC, EKS, DB, helloworld app deplo
 
 Go to hello-world/app1/dev and run 
 
-terragrunt plan-all
+terragrunt plan-all (This might fail as some dependent resources are not applied yet)
 
 terragrunt apply-all
 

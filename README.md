@@ -74,4 +74,4 @@ Go to hello-world/app1/dev and run
 
 Note: DB might not destroy properly because of an open issue: https://github.com/hashicorp/terraform/issues/18084
 
-Or you can do to app-deploy, DB, EKS, VPC folders and run terragrunt destroy. Sometime destroy timeout of fail depending on AWS behavior, in such cases run destroy again.
+Or you can do to app-deploy, DB, EKS, VPC folders and run terragrunt destroy. Sometime destroy timeout of fail depending on AWS behavior, in such cases run destroy again. Also, for DB please disable deletion protection.

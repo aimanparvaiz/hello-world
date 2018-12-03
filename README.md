@@ -5,6 +5,7 @@ Ensure that the following are available on the machine you want to run this code
 1. Terragrunt https://github.com/gruntwork-io/terragrunt
 2. Terrafrom
 3. Docker 
+4. kubectl
 
 Other steps for local:
 1. export AWS_SECRET_ACCESS_KEY and AWS_ACCESS_KEY_ID

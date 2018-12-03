@@ -3,6 +3,9 @@ terragrunt = {
   include {
     path = "${find_in_parent_folders()}"
   }
+  dependencies {
+    paths = ["../eks"]
+  }
   extra_arguments "conditional_vars" {
     commands = [
       "apply",

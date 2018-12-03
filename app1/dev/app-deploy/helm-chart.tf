@@ -1,18 +1,26 @@
+data "terraform_remote_state" "eks" {
+  backend = "s3"
+  config {
+    bucket = "apz-tf-state"
+    key = "dev/eks/terraform.tfstate"
+
+    region = "us-west-2"
+  }
+}
 provider "helm" {
   debug = true
   kubernetes {
-    config_path = "../eks/kubeconfig_app1-dev-eks"
+    config_path = "../eks/kubeconfig_${data.terraform_remote_state.eks.cluster_id}"
   }
 }
 resource "helm_release" "metrics-server" {
   name      = "metrics-server"
-  chart     = "stable/metrics-server"
-  version   = "2.0.2"
+  chart     = "../metrics-server"
   namespace = "metrics"
 }
 
 provider "kubernetes" {
-  config_path = "../eks/kubeconfig_app1-dev-eks"
+  config_path = "../eks/kubeconfig_${data.terraform_remote_state.eks.cluster_id}"
 }
 resource "kubernetes_deployment" "helloworld" {
   metadata {
@@ -73,5 +81,19 @@ resource "kubernetes_service" "helloworld" {
     }
 
     type = "LoadBalancer"
+  }
+}
+resource "kubernetes_horizontal_pod_autoscaler" "helloworld" {
+  metadata {
+    name = "helloworld"
+  }
+  spec {
+    max_replicas = 10
+    min_replicas = 3
+    target_cpu_utilization_percentage=1
+    scale_target_ref {
+      kind = "Deployment"
+      name = "helloworld"
+    }
   }
 }

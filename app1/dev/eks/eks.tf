@@ -11,7 +11,8 @@ locals {
   worker_groups = [
     {
       instance_type = "m4.large"
-      asg_max = 4
+      asg_max = 6
+      asg_desired_capacity = 3
       autoscaling_enabled = true
       subnets = "${join(",", data.terraform_remote_state.vpc.private_subnets)}"
     }
@@ -22,10 +23,7 @@ resource "null_resource" "kubeconfig" {
   depends_on = ["module.eks"]
 
   provisioner "local-exec" {
-    command = "export KUBECONFIG=kubeconfig_app1-dev-eks"
-  }
-  provisioner "local-exec" {
-  command = "kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default"
+  command = "KUBECONFIG=kubeconfig_${module.eks.cluster_id} kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default"
   }
 }
 module "eks" {

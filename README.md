@@ -1,8 +1,6 @@
 Terrafrom-Hello World
 ====
 
-README
-
 Ensure that the following are available on the machine you want to run this code from ( I tested it on my MacBook pro)
 1. Terragrunt https://github.com/gruntwork-io/terragrunt
 2. Terrafrom

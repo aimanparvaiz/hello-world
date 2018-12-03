@@ -26,19 +26,19 @@ There are two ways to setup the whole stack - VPC, EKS, DB, helloworld app deplo
 
 Go to hello-world/app1/dev and run 
 
-terragrunt plan-all (This might fail as some dependent resources are not applied yet)
+```terragrunt plan-all``` (This might fail as some dependent resources are not applied yet)
 
-terragrunt apply-all
+```terragrunt apply-all```
 
 I personally like to provision in the following order:
 
 go to vpc folder under app1 and run the following:
 
-terragrunt get --terragrunt-source-update
+```terragrunt get --terragrunt-source-update```
 
-terragrunt plan
+```terragrunt plan```
 
-terragrunt apply
+```terragrunt apply```
 
 Repeat steps 1 a, 1 b, 1c for EKS, app-deploy and DB in this order.
 
@@ -46,7 +46,7 @@ Repeat steps 1 a, 1 b, 1c for EKS, app-deploy and DB in this order.
 
 Once EKS is successfully provision and you have executed the tf in app-deploy go to EKS folder and execute the following:
  
-KUBECONFIG=kubeconfig_app1-dev-eks kubectl describe service helloworld 
+```KUBECONFIG=kubeconfig_app1-dev-eks kubectl describe service helloworld```
  
 and look for LoadBalancer Ingress (assumption is that the EKS cluster name is app1-dev-eks, if you named it differently your kubeconfig file would be named differently).
 	
@@ -58,9 +58,9 @@ All the code for this app is in the source-code directory. For making changes to
 
 Post changes to the python file, in that dir run the following commands:
 
-docker build -t aimanparvaiz/helloworld:hw-v$, where $ can be any number greater than 6 (this is just a manual way of versioning the image)
+```docker build -t aimanparvaiz/helloworld:hw-v$```, where $ can be any number greater than 6 (this is just a manual way of versioning the image)
 
-docker push aimanparvaiz/helloworld:hw-v$, $ in step 1 is same as $ here.
+```docker push aimanparvaiz/helloworld:hw-v$```, $ in step 1 is same as $ here.
 
 Update this image in hello-world/app1/dev/app-deploy/deploy.tf under spec,container. After this repeat steps 1 a, b, c from Executing the code section.
 
@@ -70,7 +70,7 @@ Update this image in hello-world/app1/dev/app-deploy/deploy.tf under spec,contai
 Just like provisioning, there are 2 ways to do this.
 Go to hello-world/app1/dev and run 
 
-terragrunt destroy-all
+```terragrunt destroy-all```
 
 Note: DB might not destroy properly because of an open issue: https://github.com/hashicorp/terraform/issues/18084
 

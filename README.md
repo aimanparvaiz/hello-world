@@ -38,7 +38,7 @@ go to vpc folder under app1 and run the following:
 
 1c. ```terragrunt apply```
 
-Repeat steps 1 a, 1 b, 1c for EKS, app-deploy and DB in this order.
+Repeat steps 1 a, 1 b, 1c for EKS, app-deploy and DB in this order. (You can do app-deploy and DB in parallel)
 
 **helloworld app:**
 

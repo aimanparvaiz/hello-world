@@ -1,0 +1,22 @@
+Things I would like to improve:
+
+1. Would like to setup something like: https://github.com/coveo/tgf which allows the whole terragrunt
+and TF setup to be available in a container. Especially with TF being sensitive to version each team member can just use this to get started.
+
+2. Bootstrap EKS with Helm TF provider - install dashboard, centralised logging like scalyr, Datadog, external DNS, Traefik etc.
+
+3. Code build and deployment should be done through a proper CI-CD tool like code fresh, circle CI.
+
+4. DB multi az, read replica. Alerting around utilization, disk usage etc.
+
+5. Multiple AWS accounts - Assume role to run a plan.
+
+6. EKS Horizontal pod scaling still have some issues, talk to AWS to get them sorted out.
+
+7. Automate route53 entry creation for hello world app ELB.
+
+8. Spot instances for EKS
+
+9. Explore TF workspaces
+
+10. Container level alerting for example: Crashloop backoff condition.

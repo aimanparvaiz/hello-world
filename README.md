@@ -44,7 +44,7 @@ Repeat steps 1 a, 1 b, 1c for EKS, app-deploy and DB in this order.
 
 **helloworld app:**
 
-Once EKS is successfully provision and you have executed the tf in app-deploy go to EKS folder and execute the following:
+Once EKS is successfully provisioned and you have executed the tf in app-deploy, go to EKS folder and execute the following:
  
 ```KUBECONFIG=kubeconfig_app1-dev-eks kubectl describe service helloworld```
  
@@ -58,9 +58,9 @@ All the code for this app is in the source-code directory. For making changes to
 
 Post changes to the python file, in that dir run the following commands:
 
-```docker build -t aimanparvaiz/helloworld:hw-v$```, where $ can be any number greater than 6 (this is just a manual way of versioning the image)
+1. ```docker build -t aimanparvaiz/helloworld:hw-v$```, where $ can be any number greater than 6 (this is just a manual way of versioning the image)
 
-```docker push aimanparvaiz/helloworld:hw-v$```, $ in step 1 is same as $ here.
+2. ```docker push aimanparvaiz/helloworld:hw-v$```, $ in step 1 is same as $ here.
 
 Update this image in hello-world/app1/dev/app-deploy/deploy.tf under spec,container. After this repeat steps 1 a, b, c from Executing the code section.
 
@@ -74,4 +74,4 @@ Go to hello-world/app1/dev and run
 
 Note: DB might not destroy properly because of an open issue: https://github.com/hashicorp/terraform/issues/18084
 
-Or you can do to app-deploy, DB, EKS, VPC folders and run terragrunt destroy. Sometime destroy timeout of fail depending on AWS behavior, in such cases run destroy again. Also, for DB please disable deletion protection.
+Or you can go to app-deploy, DB, EKS, VPC folders and run terragrunt destroy. Sometime destroy timeout or fails depending on AWS behavior, in such cases run destroy again. Also, for DB please disable deletion protection.
